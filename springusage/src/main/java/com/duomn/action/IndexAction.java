@@ -35,7 +35,7 @@ public class IndexAction {
 	@ResponseBody
 	@RequestMapping(params="method=getUserCount")
 	public Map<String, Object> getUserCount() {
-		int count = userService.countUser();
+		int count = userService.count();
 		if (count < 0) {
 			return JsonUtils.getSimpleErrorMap("错误的结果");
 		}

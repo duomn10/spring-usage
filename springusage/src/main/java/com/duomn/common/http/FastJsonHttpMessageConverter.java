@@ -15,6 +15,14 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 
+/**
+ * 功能：用于设置ajax返回的json数据转换器<br>
+ * 在alibaba新版的fastjson中已经提供了该类，此类可以略去<br>
+ * 配置：由于此类只用于视图转发，所以在SpringUsage-servlet.xml文件中配置
+ * @author Hu Qiang
+ *
+ */
+
 public class FastJsonHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
 	
 	public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");

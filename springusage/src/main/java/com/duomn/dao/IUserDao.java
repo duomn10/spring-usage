@@ -1,13 +1,8 @@
 package com.duomn.dao;
 
-import java.util.List;
-
+import com.duomn.common.dao.IBaseDao;
 import com.duomn.entity.UserModel;
 
-public interface IUserDao {
+public interface IUserDao extends IBaseDao<UserModel, Integer> {
 
-	int countAll();
-	
-	List<UserModel> listAll();
-	
 }
