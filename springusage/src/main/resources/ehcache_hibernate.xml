@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache name="javass">
+<ehcache name="springusage">
    <defaultCache
       maxElementsInMemory="1000"
       eternal="false"
@@ -8,7 +8,7 @@
       overflowToDisk="false">
     </defaultCache>
 
-   <cache name="cn.javass.demo.model.UserModel"
+   <cache name="com.duomn.entity.UserModel"
       maxElementsInMemory="2000"
       eternal="false"
       timeToIdleSeconds="3600"
@@ -16,20 +16,17 @@
       overflowToDisk="false">
     </cache>
 
-
     <cache
-        name="org.hibernate.cache.StandardQueryCache"
+        name="org.hibernate.cache.internal.StandardQueryCache"
         maxElementsInMemory="5000"
         eternal="false"
         timeToLiveSeconds="3600"
         overflowToDisk="false"/>
 
     <cache
-        name="org.hibernate.cache.UpdateTimestampsCache"
+        name="org.hibernate.cache.spi.UpdateTimestampsCache"
         maxElementsInMemory="5000"
         eternal="true"
         overflowToDisk="true"/>
-    
-        
     
 </ehcache>
