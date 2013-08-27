@@ -16,7 +16,7 @@ public class UserServiceImpl implements IUserService {
 	private IUserDao userDao;
 
 	@Override
-	public int countUser() {
+	public int count() {
 		return userDao.countAll();
 	}
 
@@ -25,4 +25,24 @@ public class UserServiceImpl implements IUserService {
 		return userDao.listAll();
 	}
 
+	@Override
+	public UserModel get(int id) {
+		return userDao.get(id);
+	}
+
+	@Override
+	public int save(UserModel userModel) {
+		return userDao.save(userModel);
+	}
+
+	@Override
+	public void update(UserModel userModel) {
+		userDao.update(userModel);
+	}
+
+	@Override
+	public void delete(int id) {
+		userDao.delete(id);
+	}
+	
 }

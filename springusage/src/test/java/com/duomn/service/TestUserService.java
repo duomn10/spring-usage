@@ -1,6 +1,9 @@
 package com.duomn.service;
 
-import java.util.List;
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +20,54 @@ import com.duomn.entity.UserModel;
 @Transactional
 @TransactionConfiguration(transactionManager="hibernateTx", defaultRollback=true)
 public class TestUserService {
+	 AtomicInteger counter = new AtomicInteger();
 
 	@Autowired
 	private IUserService userService;
 	
 	@Test
-	public void testList() {
-		List<UserModel> list = userService.listAll();
-		System.out.println(list.size());
+	public void testCount() {
+		int before = userService.count();
+		for (int i = 0; i < 3; i++) {
+			userService.save(createUser());
+		}
+		int after = userService.count();
+		Assert.assertEquals(before + 3, after);
+		
+	}
+	
+	@Test
+	public void testSave() {
+		UserModel user = createUser();
+		int id = userService.save(user);
+		
+		UserModel saved = userService.get(id);
+		Assert.assertEquals(user, saved);
+	}
+	
+	@Test
+	public void testUpdate() {
+		UserModel user = createUser();
+		int id = userService.save(user);
+		String beforeName = userService.get(id).getUsername();
+		
+		user.setUsername("Test");
+		userService.update(user);
+		
+		UserModel after = userService.get(id);
+		Assert.assertEquals(user, after);
+		Assert.assertNotSame(beforeName, after.getUsername());
+		
+	}
+	
+	private UserModel createUser() {
+		int random = counter.getAndAdd(1);
+		UserModel user = new UserModel();
+		user.setUsername("姓名" + random);
+		user.setPassword("password" + random);
+		user.setEmail("Email" + random);
+		user.setRegisterDate(new Date());
+		return user;
 	}
 	
 }
