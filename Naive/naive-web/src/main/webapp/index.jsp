@@ -10,6 +10,7 @@
 
 <a href="IndexAction.action?method=usualRequest">Redirector Action</a>
 <a id="ajaxLint" href="#">Ajax Request</a>
+<a id="userCount" href="#">User Count</a>
 <div id="area" style="display: none; width: 200px; height: 100px; border: 1px red;"></div>
 <script type="text/javascript" src="${webroot}/styles/js/jquery/jquery-1.7.2.min.js"></script>
 <script type="text/javascript">
@@ -23,6 +24,17 @@ $('#ajaxLint').click(function() {
 		dataType:'json',
 		success:function(data) {
 			alert(data.flag + ", " + data.msg);			
+		}
+	});	
+});
+$('#userCount').click(function() {
+	$.ajax({
+		url:contextpath + '/IndexAction.action?method=getUserCount',
+		data:{},
+		type:'POST',
+		dataType:'json',
+		success:function(data) {
+			alert(data.flag + ", 总人数:" + data.msg);			
 		}
 	});	
 });

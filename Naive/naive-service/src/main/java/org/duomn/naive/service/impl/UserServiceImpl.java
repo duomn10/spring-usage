@@ -1,10 +1,10 @@
-package org.duomn.naive.web.service.impl;
+package org.duomn.naive.service.impl;
 
 import java.util.List;
 
-import org.duomn.naive.web.dao.IUserDao;
-import org.duomn.naive.web.entity.UserModel;
-import org.duomn.naive.web.service.IUserService;
+import org.duomn.naive.dao.IUserDao;
+import org.duomn.naive.entity.UserModel;
+import org.duomn.naive.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

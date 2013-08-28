@@ -1,8 +1,8 @@
-package org.duomn.naive.web.dao.impl;
+package org.duomn.naive.dao.impl;
 
 import org.duomn.naive.common.dao.impl.Hibernate4DaoImpl;
-import org.duomn.naive.web.dao.IUserDao;
-import org.duomn.naive.web.entity.UserModel;
+import org.duomn.naive.dao.IUserDao;
+import org.duomn.naive.entity.UserModel;
 import org.springframework.stereotype.Repository;
 
 @Repository

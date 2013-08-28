@@ -1,8 +1,8 @@
-package org.duomn.naive.web.service;
+package org.duomn.naive.service;
 
 import java.util.List;
 
-import org.duomn.naive.web.entity.UserModel;
+import org.duomn.naive.entity.UserModel;
 
 public interface IUserService {
 	

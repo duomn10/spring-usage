@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.duomn</groupId>
-			<artifactId>naive-common</artifactId>
+			<artifactId>naive-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

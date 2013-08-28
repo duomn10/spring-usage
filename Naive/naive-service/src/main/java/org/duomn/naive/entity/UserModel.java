@@ -1,4 +1,4 @@
-package org.duomn.naive.web.entity;
+package org.duomn.naive.entity;
 
 import java.io.Serializable;
 import java.util.Date;

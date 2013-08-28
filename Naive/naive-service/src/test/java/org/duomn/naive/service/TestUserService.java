@@ -1,11 +1,12 @@
-package org.duomn.naive.web.service;
+package org.duomn.naive.service;
+
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.Assert;
 
-import org.duomn.naive.web.entity.UserModel;
+import org.duomn.naive.entity.UserModel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
