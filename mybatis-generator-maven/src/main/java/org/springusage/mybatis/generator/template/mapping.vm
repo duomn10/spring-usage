@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- @author $author -->
+<!-- @date $generatTime  -->
+<mapper namespace="${table.className}Mapping">
+	<resultMap type="java.util.Map" id="map" />
+	
+	<resultMap type="com.${companyName}.${projectName}.${moduleName}.domain.${table.className}" id="${table.objectName}RstForList">
+#foreach($field in $fieldList)	
+		<result column="${field.columnName}" property="${field.fieldName}"/>
+#end		
+	</resultMap>	
+	
+	<!-- map中放置有${table.className}的对象 -->
+	<select id="query${table.className}List" parameterType="map" resultMap="${table.objectName}RstForList">
+		select * from ${table.tableName} where 1 = 1
+		<include refid="where-clause" />
+	</select>
+	
+	<insert id="insert${table.className}" parameterType="map">
+		insert into ${table.tableName}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+#foreach($field in $fieldList)
+		<if test="${table.className}.${field.fieldName} != null">
+			${field.columnName},
+		</if>
+#end
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+#foreach($field in $fieldList)
+		<if test="${table.className}.${field.fieldName} != null">
+			#{${table.className}.${field.fieldName}},
+		</if>
+#end
+		</trim>
+	</insert>
+
+	<update id="update${table.className}" parameterType="map">
+		update ${table.tableName}
+		<set>
+#foreach($field in $fieldList)
+			<if test="${table.className}.${field.fieldName} != null">
+			${field.columnName} = #{${table.className}.${field.fieldName}},
+			</if>
+#end			
+		</set> 
+		where 1=1
+		<include refid="where-clause" />
+	</update>
+
+	<delete id="delete${table.className}" parameterType="map">
+		delete from ${table.tableName} where 1=1
+		<include refid="where-clause" />
+	</delete>
+	
+	<sql id="where-clause">
+#foreach($field in $fieldList)
+		<if test="${table.className}Clause.${field.fieldName} != null">
+			and ${field.columnName} = #{${table.className}Clause.${field.fieldName}} 
+		</if>
+#end		
+	</sql>
+	
+</mapper>

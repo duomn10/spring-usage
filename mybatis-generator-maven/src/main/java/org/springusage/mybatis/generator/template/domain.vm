@@ -1,0 +1,34 @@
+package com.${companyName}.${projectName}.${moduleName}.domain;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.math.BigDecimal;
+
+/**
+  *@author $author
+  *@date $generatTime
+  */
+public class $className implements Serializable {
+	private static final long serialVersionUID = -1L;
+	
+## filed part
+#foreach($field in $fieldList)
+	private ${field.javaType} ${field.fieldName};
+#end
+	
+## method part
+#foreach($field in $fieldList)
+	public ${field.javaType} get${field.MethodName}(){
+		return ${field.fieldName};
+	} 
+	
+	public void set${field.MethodName}(${field.javaType} ${field.fieldName}) {
+		this.${field.fieldName} = ${field.fieldName};
+	}
+	
+#end
+}

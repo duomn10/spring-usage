@@ -1,0 +1,35 @@
+package com.${companyName}.${projectName}.${moduleName}.dao;
+
+import java.util.List;
+
+import com.${companyName}.${projectName}.${moduleName}.domain.${table.className};
+
+public interface I${table.className}Dao {
+	
+	/**
+	 * 
+	 * @param ${table.objectName} 要保存的数据对象
+	 */
+	void insert${table.className}(${table.className} ${table.objectName});
+	
+	/**
+	 * 
+	 * @param ${table.objectName}Clause 包含查询条件的对象
+	 * @return
+	 */
+	List<${table.className}> query${table.className}(${table.className} ${table.objectName}Clause);
+	
+	/**
+	 * 
+	 * @param ${table.objectName} 要更新的数据对象
+	 * @param ${table.objectName}Clause 包含查询条件的数据对象
+	 */
+	void update${table.className}(${table.className} ${table.objectName}, ${table.className} ${table.objectName}Clause);
+	
+	/**
+	 * 根据对象中不为空的条件删除数据
+	 * @param ${table.objectName}Clause  包含查询条件的数据对象
+	 */
+	void delete${table.className}(${table.className} ${table.objectName}Clause);
+	
+}

@@ -1,0 +1,49 @@
+package com.${companyName}.${projectName}.${moduleName}.dao.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import com.${companyName}.${projectName}.${moduleName}.dao.I${table.className}Dao;
+import com.${companyName}.${projectName}.${moduleName}.domain.${table.className};
+import com.teamsun.pc.support.core.common.dao.BatisDao;
+
+@Component
+public class ${table.className}DaoImpl extends BatisDao implements I${table.className}Dao {
+
+	@Override
+	public void insert${table.className}(${table.className} ${table.objectName}) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(${table.objectName}.getClass().getSimpleName(), ${table.objectName});
+		String sql = "${table.className}Mapping.insert${table.className}";
+		super.execSql(sql, null, data);
+	}
+
+	@Override
+	public List<${table.className}> query${table.className}(${table.className} ${table.objectName}) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(${table.objectName}.getClass().getSimpleName() + "Clause", ${table.objectName});
+		String sql = "${table.className}Mapping.query${table.className}List";
+		return super.query(sql, null, data);
+	}
+
+	@Override
+	public void update${table.className}(${table.className} ${table.objectName}, ${table.className} ${table.objectName}Clause) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(${table.objectName}.getClass().getSimpleName(), ${table.objectName});
+		data.put(${table.objectName}Clause.getClass().getSimpleName() + "Clause", ${table.objectName}Clause);
+		String sql = "${table.className}Mapping.update${table.className}";
+		super.execSql(sql, null, data);
+	}
+
+	@Override
+	public void delete${table.className}(${table.className} ${table.objectName}) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(${table.objectName}.getClass().getSimpleName() + "Clause", ${table.objectName});
+		String sql = "${table.className}Mapping.delete${table.className}";
+		super.execSql(sql, null, data);
+	}
+
+}
