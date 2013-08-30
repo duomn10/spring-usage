@@ -3,7 +3,7 @@ package org.duomn.naive.web.action;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.duomn.naive.common.util.JsonUtils;
+import org.duomn.naive.common.util.JsonUtil;
 import org.duomn.naive.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,10 +36,10 @@ public class IndexAction {
 	public Map<String, Object> getUserCount() {
 		int count = userService.count();
 		if (count < 0) {
-			return JsonUtils.getSimpleErrorMap("错误的结果");
+			return JsonUtil.getSimpleErrorMap("错误的结果");
 		}
 			
-		return JsonUtils.getSimpleSuccessMap(count);
+		return JsonUtil.getSimpleSuccessMap(count);
 	}
 	
 }
