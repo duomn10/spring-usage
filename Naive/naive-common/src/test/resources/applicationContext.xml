@@ -200,5 +200,9 @@
 		</property>
 	</bean>
 	 -->
+
+	<!-- 七：集成ssh工具类的单例 -->
+	<bean id="sshPool" class="org.duomn.naive.common.ssh.SSHPool" init-method="init" destroy-method="destory">
+	</bean>
 	
 </beans>

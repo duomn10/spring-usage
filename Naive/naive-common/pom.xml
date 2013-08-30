@@ -140,6 +140,12 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.5</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>jsch</groupId>
+		  <artifactId>jsch</artifactId>
+		  <version>0.1.29</version>
+		</dependency>
 
 	</dependencies>
 </project>
