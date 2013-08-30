@@ -27,7 +27,7 @@
 	<!-- 开启注解事务
 	<tx:annotation-driven transaction-manager="txManager"/>
 	 -->
-	
+	<!-- ①：DBCP连接池的配置 -->
 	<!-- 
 	DBCP数据库连接池 
 	<bean id="dbcpDS" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -90,7 +90,7 @@
 	</aop:config>
 	 -->
 	
-	
+	<!-- ②：c3p0连接池的配置 -->
 	<!-- C3P0数据库连接池 -->
 	<bean id="c3p0DS" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
 		<property name="driverClass" value="${c3p0.driver}"/>
@@ -105,6 +105,7 @@
 		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"/>
 	</bean>	
 	
+	<!-- ③：hibernate的配置 -->
 	<!-- Hibernate SessionFactory -->
     <bean id="sessionFactory"
         class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -164,12 +165,40 @@
         <aop:advisor advice-ref="hibernateTxAdvice" pointcut-ref="txPointcut"/>
     </aop:config>
     
-    
+    <!-- ④：自动扫描注解注入bean -->
    	<context:annotation-config />
 	<context:component-scan base-package="org.**.dao" />
 	<context:component-scan base-package="org.**.service" />
+	<context:component-scan base-package="org.**.common" />
 	
+	<!-- ⑤：用于获取容器中所有的bean -->
 	<bean class="org.duomn.naive.common.util.SpringContextHolder" lazy-init="false" />
 	
+	<!-- ⑥：邮件配置，从{org.springframework.mail.javamail.JavaMailSenderImpl}继承，简化调用的过程 -->
+	<bean id="mailSender" class="org.duomn.naive.common.mail.MailSenderImpl">
+		<property name="host" value="smtp.126.com" />
+		<property name="username" value="duomn001" />
+		<property name="password" value="qp3024" />
+		<property name="from" value="duomn001@126.com" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- 	
+	<bean id="mailSender" class="org.springframework.mail.javamail.MailSenderImpl">
+		<property name="host" value="smtp.126.com" />
+		<property name="username" value="duomn001" />
+		<property name="password" value="qp3024" />
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+			</props>
+		</property>
+	</bean>
+	 -->
 	
 </beans>

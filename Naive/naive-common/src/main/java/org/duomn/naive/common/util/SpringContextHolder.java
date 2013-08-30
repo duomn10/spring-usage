@@ -1,5 +1,7 @@
 package org.duomn.naive.common.util;
 
+import org.duomn.naive.common.mail.MailSender;
+import org.duomn.naive.common.mail.MailSenderImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -30,6 +32,11 @@ public class SpringContextHolder implements ApplicationContextAware {
 	/** 根据名称获取bean */
 	public static <T> T getBean(String name) {
 		return (T) applicationContext.getBean(name);
+	}
+	
+	/** 获取邮件发送 */
+	public static MailSender getMailSender() {
+		return applicationContext.getBean(MailSenderImpl.class);
 	}
 	
 	
