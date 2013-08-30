@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.duomn.naive.common.dao.IBaseDao;
-import org.duomn.naive.common.util.PageUtils;
+import org.duomn.naive.common.util.PagingUtil;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -77,7 +77,7 @@ public abstract class Hibernate4DaoImpl<M, PK extends Serializable> implements I
 		Query query = getSession().createQuery("from " + entityClass.getSimpleName());
 		if (pn > 0 && pageSize > 0) {
 			query.setMaxResults(pageSize);
-			query.setFirstResult(PageUtils.getStartIndex(pn, pageSize));
+			query.setFirstResult(PagingUtil.getStartIndex(pn, pageSize));
 		} else if (pn <= 0) { // 当所有参数没有处置时，查所有
 			query.setFirstResult(0);
 		}

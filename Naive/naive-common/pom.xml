@@ -1,21 +1,22 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.duomn</groupId>
-    <artifactId>naive</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  	<relativePath>../naive</relativePath>
-  </parent>
-  <artifactId>naive-common</artifactId>
-  <name>naive-common</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
-  </properties>
-  <dependencies>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.duomn</groupId>
+		<artifactId>naive</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../naive</relativePath>
+	</parent>
+	<artifactId>naive-common</artifactId>
+	<name>naive-common</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<org.springframework.version>3.1.0.RELEASE</org.springframework.version>
+	</properties>
+	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -44,11 +45,11 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-		  <groupId>net.sf.ehcache</groupId>
-		  <artifactId>ehcache-core</artifactId>
-		  <version>2.4.7</version>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.4.7</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -59,7 +60,7 @@
 			<artifactId>c3p0</artifactId>
 			<version>0.9.1.2</version>
 		</dependency>
-		
+
 		<dependency>
 			<scope>test</scope>
 			<groupId>org.springframework</groupId>
@@ -106,14 +107,14 @@
 			<artifactId>guava</artifactId>
 			<version>14.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
 			<version>1.7</version>
 		</dependency>
-		
-			<dependency>
+
+		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis-spring</artifactId>
 			<version>1.0.1</version>
@@ -123,6 +124,22 @@
 			<artifactId>mybatis</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-mail</artifactId>
+			<version>2.1.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.5</version>
+		</dependency>
+
 	</dependencies>
 </project>

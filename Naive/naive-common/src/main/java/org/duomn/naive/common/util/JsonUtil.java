@@ -3,7 +3,10 @@ package org.duomn.naive.common.util;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JsonUtils {
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.ResourceUtils;
+
+public class JsonUtil {
 	/** 1:成功;0:失败.*/
 	private static final String RETURN_FLAG = "flag";
 	
