@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.duomn.naive.common.exception.BaseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -14,53 +18,76 @@ import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 
 public class SSHClient {
-	static JSch jsch = new JSch();
-	static String host = "192.168.56.2";
-	static String user = "root";
-	static String passwd = "123456";
-	
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(SSHClient.class);
+
+	private String host = "192.168.56.2";
+	private String user = "root";
+	private String passwd = "123456";
+
+	int count = 0;
+
 	private Session sess;
-	
-	public void connect() throws JSchException {
+
+	public void connect() throws BaseException {
 		JSch jsch = new JSch();
+		count = 0;
+		try {
+			sess = jsch.getSession(user, host, 22);
+			sess.setPassword(passwd);
 
-		sess = jsch.getSession(user, host, 22);
-		sess.setPassword(passwd);
-
-		UserInfo ui = new MyUserInfo();
-		sess.setUserInfo(ui);
-		sess.connect();
+			UserInfo ui = new MyUserInfo();
+			sess.setUserInfo(ui);
+			sess.connect();
+		} catch (Exception e) {
+			throw new BaseException("JSch create session error.", e);
+		}
 	}
-	
+
 	public void disconnect() {
 		if (sess != null) {
 			sess.disconnect();
 		}
 	}
 
-	public String sendCommand(String cmd)
-			throws JSchException, IOException {
-		String command = cmd;
-		Channel channel = sess.openChannel("exec");
-		((ChannelExec) channel).setCommand(command);
+	public synchronized String sendCommand(String cmd) throws BaseException {
+		count++;
 
-		channel.setInputStream(null);
-
-		((ChannelExec) channel).setErrStream(System.err);
-
-		InputStream in = channel.getInputStream();
-
-		channel.connect();
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		BufferedReader br = null;
+		Channel channel = null;
 		StringBuffer buf = new StringBuffer();
-		String line = null;
-		while ((line = br.readLine()) != null) {
-			buf.append(line).append("@test@");
+
+		try {
+			channel = sess.openChannel("exec");
+			((ChannelExec) channel).setCommand(cmd);
+			channel.setInputStream(null);
+			((ChannelExec) channel).setErrStream(System.err);
+			InputStream in = channel.getInputStream();
+			channel.connect();
+
+			br = new BufferedReader(new InputStreamReader(in));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+				buf.append(line).append("@test@" + count + "@");
+			}
+			logger.debug("cmd:" + cmd + "----return:" + buf.toString());
+		} catch (JSchException e) {
+			throw new BaseException("session exception", e);
+		} catch (IOException e) {
+			throw new BaseException("stream exception", e);
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (channel != null)
+				channel.disconnect();
 		}
-		br.close();
-		channel.disconnect();
-		return  buf.toString();
+		return buf.toString();
 	}
 
 	public static class MyUserInfo implements UserInfo, UIKeyboardInteractive {
@@ -92,5 +119,5 @@ public class SSHClient {
 		public void showMessage(String message) {}
 
 	}
-	
+
 }

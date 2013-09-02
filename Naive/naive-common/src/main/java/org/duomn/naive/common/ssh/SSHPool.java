@@ -1,13 +1,11 @@
 package org.duomn.naive.common.ssh;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.duomn.naive.common.exception.BaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.jcraft.jsch.JSchException;
 
 public class SSHPool {
 	
@@ -15,95 +13,144 @@ public class SSHPool {
 	
 	List<SSHClient> clients = new ArrayList<SSHClient>();
 	
-	private int pool_size = 10;
+	/* 资源池的上限 */
+	private int poolSize = 10;
+	/* 资源池的初始化大小 */
+	private int initSize = 0;
+	/* 缩减资源池的线程频率 */
+	private int shrinkCheckFrequency = 3; 
+	
 	private int used = 0;
+	/* 用来判断池的上限，是否可以继续创建资源 */
+	private int total = 0; 
+	/* 池里面的实际容量，取list的size不准确 */
+	private int actualTotal = 0;
+	
+	private volatile boolean isShutdown = false;
 	
 	public void init() {
 		logger.debug("Begin to init SSHPool...");
-		logger.debug("PoolSize is :" + pool_size);
-		for (int i = 0; i < 1; i++) {
+		logger.debug("PoolSize is :" + poolSize);
+		while (total < initSize) {
+			total++;
 			SSHClient ssh = new SSHClient();
-			try {
-				ssh.connect();
-			} catch (JSchException e) {
-				e.printStackTrace();
-			}
-			synchronized (clients) {
-				clients.add(ssh);
-				logger.debug("Init-Pool count of SSHClient[total:" + getTotalCount() + ", used:" + used + "].");
-				clients.notify();
-			}
+			ssh.connect();
+			
+			clients.add(ssh);
+			actualTotal++;
+			logger.debug("Init-Pool " + getPoolStatus());
+			clients.notify();
 		}
-	}
-	
-	public boolean add() {
-		synchronized (clients) {
-			if (getTotalCount() < pool_size) {
-				SSHClient ssh = new SSHClient();
-				try {
-					ssh.connect();
-				} catch (JSchException e) {
-					e.printStackTrace();
+		
+		/** Shrink */
+		new Thread() {
+			public void run() {
+				while (!isShutdown) {
+					try {
+						Thread.sleep(shrinkCheckFrequency * 1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					while (actualTotal != 0 && actualTotal > initSize && used * 10 / actualTotal < 4) {
+						total--;
+						SSHClient ssh = null;
+						try {
+							synchronized (clients) {
+								ssh = clients.remove(0);
+								actualTotal--;
+								clients.notify();
+							}
+							ssh.disconnect();
+						} catch (Exception e) {
+							e.printStackTrace();
+							logger.error("Shrink-Pool error.", e);
+							total++;
+						}
+						logger.debug("Shrink-Pool " + getPoolStatus());
+					}
 				}
-				clients.add(ssh);
-				logger.debug("Add-Pool count of SSHClient[total:" + getTotalCount() + ", used:" + used + "].");
-				clients.notify();
-				return true;
 			}
-			return false;
-		}
+		}.start();
 	}
 	
-	public int getTotalCount() {
-		synchronized (clients) {
-			return used + clients.size();
-		}
+	private String getPoolStatus() {
+		return "The count of SSHClient[total:" + total + ", actual:" + actualTotal + ", used:" + used + ", clients size:" + clients.size() + "].";
 	}
 	
+	/** 动态扩容 */
+	public void enlarge() {
+		new Thread() {
+			public void run() {
+				if (total < poolSize) {
+					total++;
+					try {
+						SSHClient ssh = new SSHClient();
+						ssh.connect();
+						synchronized (clients) {
+							clients.add(ssh);
+							actualTotal++;
+							logger.debug("Enlarge-Pool " + getPoolStatus());
+							clients.notify();
+						}
+					} catch (Exception e) {
+//						e.printStackTrace();
+						logger.error("Enlarge-Pool error.", e);
+						total--;
+					}
+				}
+			}
+		}.start();
+	}
+
 	public SSHClient getConnection() {
 		SSHClient ssh = null;
 		synchronized (clients) {
 			while (clients.isEmpty()) {
 				try {
-					if (!add()) {
-						clients.wait(10 * 1000);
-					}
+					enlarge();
+					clients.wait(300);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+					logger.error("System thread(getConnection) wait error.", e);
 				} 
 			}
 			ssh = clients.remove(0);
 			used++;
-			logger.debug("Getconnection-Pool count of SSHClient[total:" + getTotalCount() + ", used:" + used + "].");
+			logger.debug("Getconnection-Pool " + getPoolStatus());
 		}
 		return ssh;
 	}
 	
 	public void releaseConnection(SSHClient ssh) {
 		synchronized (clients) {
-			clients.add(ssh);
 			used--;
-			logger.debug("ReleaseConnection-Pool count of SSHClient[total:" + getTotalCount() + ", used:" + used + "].");
+			clients.add(ssh);
+			logger.debug("ReleaseConnection-Pool " + getPoolStatus());
 			clients.notify();
 		}
 	}
 	
 	public void destory() {
-		for (int i = 0; i < pool_size; i++) {
+		isShutdown = true;
+		while (total > 0) {
 			SSHClient ssh = null;
 			synchronized (clients) {
 				while (clients.isEmpty()) {
 					try {
-						clients.wait(10 * 1000);
+						clients.wait(1 * 1000);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+						logger.error("System thread(destory) wait error.", e);
 					} 
 				}
 				ssh = clients.remove(0);
+				actualTotal--;
 				ssh.disconnect();
+				total--;
 			}
 			
-			logger.debug("Destory-Pool count of SSHClient[total:" + getTotalCount() + ", used:" + used + "].");
+			logger.debug("Destory-Pool " + getPoolStatus());
 		}
 	}
 	
@@ -112,10 +159,9 @@ public class SSHPool {
 		SSHClient ssh = this.getConnection();
 		try {
 			msg = ssh.sendCommand(cmd);
-		} catch (JSchException e) {
+		} catch (BaseException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("SSHClient exec happenned error.", e);
 		}
 		this.releaseConnection(ssh);
 		return msg;
