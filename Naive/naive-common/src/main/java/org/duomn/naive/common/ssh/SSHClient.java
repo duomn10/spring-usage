@@ -59,12 +59,31 @@ public class SSHClient {
 		StringBuffer buf = new StringBuffer();
 
 		try {
-			channel = sess.openChannel("exec");
+			try{
+				channel = sess.openChannel("exec");
+			} catch (JSchException e) {
+				logger.warn("Session openChannel exec happend JSchException. reset Session!");
+				disconnect();
+				connect();
+				channel = sess.openChannel("exec");
+			}
 			((ChannelExec) channel).setCommand(cmd);
 			channel.setInputStream(null);
 			((ChannelExec) channel).setErrStream(System.err);
 			InputStream in = channel.getInputStream();
-			channel.connect();
+			try {
+				channel.connect();
+			} catch (JSchException e) {
+				logger.warn("Channel connect happend JSchException. reset Session!");
+				disconnect();
+				connect();
+				channel = sess.openChannel("exec");
+				((ChannelExec) channel).setCommand(cmd);
+				channel.setInputStream(null);
+				((ChannelExec) channel).setErrStream(System.err);
+				in = channel.getInputStream();
+				channel.connect();
+			}
 
 			br = new BufferedReader(new InputStreamReader(in));
 			String line = null;

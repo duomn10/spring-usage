@@ -29,8 +29,8 @@ public class SSHPool {
 	private volatile boolean isShutdown = false;
 	
 	public void init() {
-		logger.debug("Begin to init SSHPool...");
-		logger.debug("PoolSize is :" + poolSize);
+		logger.info("Begin to init SSHPool...");
+		logger.info("PoolSize is :" + poolSize);
 		while (total < initSize) {
 			total++;
 			SSHClient ssh = new SSHClient();
@@ -38,7 +38,7 @@ public class SSHPool {
 			
 			clients.add(ssh);
 			actualTotal++;
-			logger.debug("Init-Pool " + getPoolStatus());
+			logger.info("Init-Pool " + getPoolStatus());
 			clients.notify();
 		}
 		
@@ -67,7 +67,7 @@ public class SSHPool {
 							logger.error("Shrink-Pool error.", e);
 							total++;
 						}
-						logger.debug("Shrink-Pool " + getPoolStatus());
+						logger.info("Shrink-Pool " + getPoolStatus());
 					}
 				}
 			}
@@ -90,7 +90,7 @@ public class SSHPool {
 						synchronized (clients) {
 							clients.add(ssh);
 							actualTotal++;
-							logger.debug("Enlarge-Pool " + getPoolStatus());
+							logger.info("Enlarge-Pool " + getPoolStatus());
 							clients.notify();
 						}
 					} catch (Exception e) {
@@ -117,7 +117,7 @@ public class SSHPool {
 			}
 			ssh = clients.remove(0);
 			used++;
-			logger.debug("Getconnection-Pool " + getPoolStatus());
+			logger.info("Getconnection-Pool " + getPoolStatus());
 		}
 		return ssh;
 	}
@@ -126,7 +126,7 @@ public class SSHPool {
 		synchronized (clients) {
 			used--;
 			clients.add(ssh);
-			logger.debug("ReleaseConnection-Pool " + getPoolStatus());
+			logger.info("ReleaseConnection-Pool " + getPoolStatus());
 			clients.notify();
 		}
 	}
@@ -150,7 +150,7 @@ public class SSHPool {
 				total--;
 			}
 			
-			logger.debug("Destory-Pool " + getPoolStatus());
+			logger.info("Destory-Pool " + getPoolStatus());
 		}
 	}
 	
