@@ -12,18 +12,18 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
             http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.0.xsd"
 	default-autowire="byName" default-lazy-init="true">
-	
-	<bean id="propertyConfigurer"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>classpath*:jdbc.properties</value>
-			</list>
-		</property>
-	</bean>
-	
-	<!-- 开启AOP监听 -->
-	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+  <bean id="propertyConfigurer"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath*:jdbc.properties</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- 开启AOP监听 -->
+  <aop:aspectj-autoproxy proxy-target-class="true" />
 	<!-- 开启注解事务
 	<tx:annotation-driven transaction-manager="txManager"/>
 	 -->
@@ -89,120 +89,123 @@
 		<aop:advisor pointcut-ref="serviceOperation" advice-ref="mybatisTxAdvice" />
 	</aop:config>
 	 -->
-	
-	<!-- ②：c3p0连接池的配置 -->
-	<!-- C3P0数据库连接池 -->
-	<bean id="c3p0DS" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-		<property name="driverClass" value="${c3p0.driver}"/>
-		<property name="jdbcUrl" value="${c3p0.url}"/>
-		<property name="user" value="${c3p0.username}"/>
-		<property name="password" value="${c3p0.password}"/>
-		<property name="minPoolSize" value="${c3p0.minPoolSize}"/>
-		<property name="maxPoolSize" value="${c3p0.maxPoolSize}"/>
-		<property name="initialPoolSize" value="${c3p0.initialPoolSize}"/>
-		<property name="maxIdleTime" value="${c3p0.maxIdleTime}"/>
-		<property name="acquireIncrement" value="${c3p0.acquireIncrement}"/>
-		<property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}"/>
-	</bean>	
-	
-	<!-- ③：hibernate的配置 -->
-	<!-- Hibernate SessionFactory -->
-    <bean id="sessionFactory"
-        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-       <property name="dataSource" ref="c3p0DS"/>
-    	<property name="packagesToScan">
-			<list>
-				<value>org.duomn.**.entity</value>
-			</list>
-		</property>
-        <property name="hibernateProperties">
-            <props>
-                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
-                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
-                <prop key="hibernate.format_sql">true</prop>
-                <prop key="hibernate.query.substitutions">${hibernate.query.substitutions}</prop>
-                <prop key="hibernate.default_batch_fetch_size">${hibernate.default_batch_fetch_size}</prop>
-                <prop key="hibernate.max_fetch_depth">${hibernate.max_fetch_depth}</prop>
-                <prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
-                <prop key="hibernate.bytecode.use_reflection_optimizer">${hibernate.bytecode.use_reflection_optimizer}</prop>
 
-                <prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
-                <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
-                <prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
-                <prop key="net.sf.ehcache.configurationResourceName">${net.sf.ehcache.configurationResourceName}</prop>
-                <prop key="hibernate.cache.use_structured_entries">${hibernate.cache.use_structured_entries}</prop>
-            </props>
-        </property>
-    </bean>
-    <!-- Hibernate的事务管理 -->
-    <bean id="hibernateTx" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-	<!-- Hibernate的AOP配置 -->
-    <tx:advice id="hibernateTxAdvice" transaction-manager="hibernateTx">
-        <tx:attributes>
-            <tx:method name="save*" propagation="REQUIRED" />
-            <tx:method name="add*" propagation="REQUIRED" />
-            <tx:method name="create*" propagation="REQUIRED" />
-            <tx:method name="insert*" propagation="REQUIRED" />
-            <tx:method name="update*" propagation="REQUIRED" />
-            <tx:method name="merge*" propagation="REQUIRED" />
-            <tx:method name="del*" propagation="REQUIRED" />
-            <tx:method name="remove*" propagation="REQUIRED" />
-            <tx:method name="put*" propagation="REQUIRED" />
-            <tx:method name="use*" propagation="REQUIRED"/>
-            <!--hibernate4必须配置为开启事务 否则 getCurrentSession()获取不到-->
-            <tx:method name="get*" propagation="REQUIRED" read-only="true" />
-            <tx:method name="count*" propagation="REQUIRED" read-only="true" />
-            <tx:method name="find*" propagation="REQUIRED" read-only="true" />
-            <tx:method name="list*" propagation="REQUIRED" read-only="true" />
-            <tx:method name="*" read-only="true" />
-        </tx:attributes>
-    </tx:advice>
-    <aop:config expose-proxy="true">
-        <!-- 只对业务逻辑层实施事务 -->
-        <aop:pointcut id="txPointcut" expression="execution(* org.duomn..service..*.*(..))" />
-        <aop:advisor advice-ref="hibernateTxAdvice" pointcut-ref="txPointcut"/>
-    </aop:config>
-    
-    <!-- ④：自动扫描注解注入bean -->
-   	<context:annotation-config />
-	<context:component-scan base-package="org.**.dao" />
-	<context:component-scan base-package="org.**.service" />
-	<context:component-scan base-package="org.**.common" />
-	
-	<!-- ⑤：用于获取容器中所有的bean -->
-	<bean class="org.duomn.naive.common.util.SpringContextHolder" lazy-init="false" />
-	
-	<!-- ⑥：邮件配置，从{org.springframework.mail.javamail.JavaMailSenderImpl}继承，简化调用的过程 -->
-	<bean id="mailSender" class="org.duomn.naive.common.mail.MailSenderImpl">
-		<property name="host" value="smtp.126.com" />
-		<property name="username" value="duomn001" />
-		<property name="password" value="qp3024" />
-		<property name="from" value="duomn001@126.com" />
-		<property name="defaultEncoding" value="UTF-8" />
-		<property name="javaMailProperties">
-			<props>
-				<prop key="mail.smtp.auth">true</prop>
-			</props>
-		</property>
-	</bean>
-	<!-- 	
-	<bean id="mailSender" class="org.springframework.mail.javamail.MailSenderImpl">
-		<property name="host" value="smtp.126.com" />
-		<property name="username" value="duomn001" />
-		<property name="password" value="qp3024" />
-		<property name="defaultEncoding" value="UTF-8" />
-		<property name="javaMailProperties">
-			<props>
-				<prop key="mail.smtp.auth">true</prop>
-			</props>
-		</property>
-	</bean>
-	 -->
+  <!-- ②：c3p0连接池的配置 -->
+  <!-- C3P0数据库连接池 -->
+  <bean id="c3p0DS" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+    destroy-method="close">
+    <property name="driverClass" value="${c3p0.driver}" />
+    <property name="jdbcUrl" value="${c3p0.url}" />
+    <property name="user" value="${c3p0.username}" />
+    <property name="password" value="${c3p0.password}" />
+    <property name="minPoolSize" value="${c3p0.minPoolSize}" />
+    <property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+    <property name="initialPoolSize" value="${c3p0.initialPoolSize}" />
+    <property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+    <property name="acquireIncrement" value="${c3p0.acquireIncrement}" />
+    <property name="idleConnectionTestPeriod" value="${c3p0.idleConnectionTestPeriod}" />
+  </bean>
 
-	<!-- 七：集成ssh工具类的单例 -->
-	<bean id="sshPool" class="org.duomn.naive.common.ssh.SSHPool" init-method="init" destroy-method="destory">
-	</bean>
+  <!-- ③：hibernate的配置 -->
+  <!-- Hibernate SessionFactory -->
+  <bean id="sessionFactory"
+    class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <property name="dataSource" ref="c3p0DS" />
+    <property name="packagesToScan">
+      <list>
+        <value>org.duomn.**.entity</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+        <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+        <prop key="hibernate.format_sql">true</prop>
+        <prop key="hibernate.query.substitutions">${hibernate.query.substitutions}</prop>
+        <prop key="hibernate.default_batch_fetch_size">${hibernate.default_batch_fetch_size}</prop>
+        <prop key="hibernate.max_fetch_depth">${hibernate.max_fetch_depth}</prop>
+        <prop key="hibernate.generate_statistics">${hibernate.generate_statistics}</prop>
+        <prop key="hibernate.bytecode.use_reflection_optimizer">${hibernate.bytecode.use_reflection_optimizer}
+        </prop>
+
+        <prop key="hibernate.cache.use_second_level_cache">${hibernate.cache.use_second_level_cache}</prop>
+        <prop key="hibernate.cache.use_query_cache">${hibernate.cache.use_query_cache}</prop>
+        <prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
+        <prop key="net.sf.ehcache.configurationResourceName">${net.sf.ehcache.configurationResourceName}
+        </prop>
+        <prop key="hibernate.cache.use_structured_entries">${hibernate.cache.use_structured_entries}</prop>
+      </props>
+    </property>
+  </bean>
+  <!-- Hibernate的事务管理 -->
+  <bean id="hibernateTx"
+    class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <!-- Hibernate的AOP配置 -->
+  <tx:advice id="hibernateTxAdvice" transaction-manager="hibernateTx">
+    <tx:attributes>
+      <tx:method name="save*" propagation="REQUIRED" />
+      <tx:method name="add*" propagation="REQUIRED" />
+      <tx:method name="create*" propagation="REQUIRED" />
+      <tx:method name="insert*" propagation="REQUIRED" />
+      <tx:method name="update*" propagation="REQUIRED" />
+      <tx:method name="merge*" propagation="REQUIRED" />
+      <tx:method name="del*" propagation="REQUIRED" />
+      <tx:method name="remove*" propagation="REQUIRED" />
+      <tx:method name="put*" propagation="REQUIRED" />
+      <tx:method name="use*" propagation="REQUIRED" />
+      <!--hibernate4必须配置为开启事务 否则 getCurrentSession()获取不到 -->
+      <tx:method name="get*" propagation="REQUIRED" read-only="true" />
+      <tx:method name="count*" propagation="REQUIRED"
+        read-only="true" />
+      <tx:method name="find*" propagation="REQUIRED"
+        read-only="true" />
+      <tx:method name="list*" propagation="REQUIRED"
+        read-only="true" />
+      <tx:method name="*" read-only="true" />
+    </tx:attributes>
+  </tx:advice>
+  <aop:config expose-proxy="true">
+    <!-- 只对业务逻辑层实施事务 -->
+    <aop:pointcut id="txPointcut"
+      expression="execution(* org.duomn..service..*.*(..))" />
+    <aop:advisor advice-ref="hibernateTxAdvice"
+      pointcut-ref="txPointcut" />
+  </aop:config>
+
+  <!-- ④：自动扫描注解注入bean -->
+  <context:annotation-config />
+  <context:component-scan base-package="org.**.dao" />
+  <context:component-scan base-package="org.**.service" />
+  <context:component-scan base-package="org.**.common" />
+
+  <!-- ⑤：用于获取容器中所有的bean -->
+  <bean class="org.duomn.naive.common.util.SpringContextHolder"
+    lazy-init="false" />
+
+  <!-- ⑥：邮件配置，从{org.springframework.mail.javamail.JavaMailSenderImpl}继承，简化调用的过程 -->
+  <bean id="mailSender" class="org.duomn.naive.common.mail.MailSenderImpl">
+    <property name="host" value="smtp.126.com" />
+    <property name="username" value="duomn001" />
+    <property name="password" value="qp3024" />
+    <property name="from" value="duomn001@126.com" />
+    <property name="defaultEncoding" value="UTF-8" />
+    <property name="javaMailProperties">
+      <props>
+        <prop key="mail.smtp.auth">true</prop>
+      </props>
+    </property>
+  </bean>
+  <!-- <bean id="mailSender" class="org.springframework.mail.javamail.MailSenderImpl"> 
+    <property name="host" value="smtp.126.com" /> <property name="username" value="duomn001" 
+    /> <property name="password" value="qp3024" /> <property name="defaultEncoding" 
+    value="UTF-8" /> <property name="javaMailProperties"> <props> <prop key="mail.smtp.auth">true</prop> 
+    </props> </property> </bean> -->
+
+  <!-- 七：集成ssh工具类的单例 -->
+  <bean id="sshPool" class="org.duomn.naive.common.ssh.SSHPool"
+    init-method="init" destroy-method="destory">
+  </bean>
 	
 </beans>
