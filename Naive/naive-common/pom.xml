@@ -146,6 +146,11 @@
       <artifactId>jsch</artifactId>
       <version>0.1.29</version>
     </dependency>
+    <dependency>
+  <groupId>org.jodd</groupId>
+  <artifactId>jodd-mail</artifactId>
+  <version>3.4.2</version>
+</dependency>
   </dependencies>
 
   <build>
