@@ -23,6 +23,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.duomn</groupId>
+      <artifactId>naive-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-module-junit4</artifactId>
       <version>1.4.10</version>
