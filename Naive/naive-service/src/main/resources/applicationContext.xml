@@ -111,7 +111,7 @@
        <property name="dataSource" ref="c3p0DS"/>
     	<property name="packagesToScan">
 			<list>
-				<value>org.duomn.**.entity</value>
+				<value>org.duomn.**.model</value>
 			</list>
 		</property>
         <property name="hibernateProperties">
